@@ -1,0 +1,58 @@
+#include <iostream>
+#include <vector>
+#include <stdexcept>
+using namespace std;
+
+class Stack {
+private:
+    int top;
+    vector<int> items;
+
+public:
+    Stack() : top(-1) {}
+
+    void push(int item) {
+        items.push_back(item);
+        top++;
+    }
+
+    int pop() {
+        if (is_empty()) {
+            throw out_of_range("Переполнение стека");
+        }
+        int item = items[top];
+        items.pop_back();
+        top--;
+        return item;
+    }
+
+    bool is_empty() const {
+        return top == -1;
+    }
+
+    void display() const {
+        for (int i = top; i >= 0; --i) {
+            cout << items[i] << endl;
+        }
+    }
+};
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    
+    Stack stack;
+    
+    stack.push(1);
+    stack.push(2);
+    stack.push(3);
+    
+    cout << "Стек:" << endl;
+    stack.display();
+    
+    cout << "Извлеченный элемент: " << stack.pop() << endl;
+    
+    cout << "Стек после извлечения:" << endl;
+    stack.display();
+
+    return 0;
+}
