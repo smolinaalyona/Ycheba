@@ -1,0 +1,123 @@
+#include <iostream>
+using namespace std;
+
+class DynamicArray {
+private:
+    int* data;
+    int size;
+    int capacity;
+
+public:
+    DynamicArray() : size(0), capacity(1) {
+        data = new int[capacity];
+    }
+
+    ~DynamicArray() {
+        delete[] data;
+    }
+
+    int length() const {
+        return size;
+    }
+
+    int& operator[](int index) {
+        return data[index];
+    }
+
+    const int& operator[](int index) const {
+        return data[index];
+    }
+
+    void append(int value) {
+        if(size == capacity) {
+            capacity *= 2;
+            int* new_data = new int[capacity];
+            for(int i = 0; i < size; ++i) {
+                new_data[i] = data[i];
+            }
+            delete[] data;
+            data = new_data;
+        }
+        data[size++] = value;
+    }
+
+    void extend(const DynamicArray& other) {
+        for(int i = 0; i < other.length(); ++i) {
+            append(other[i]);
+        }
+    }
+};
+
+void bubbleSort(DynamicArray& arr) {
+    for(int i = 0; i < arr.length() - 1; ++i) {
+        for(int j = 0; j < arr.length() - i - 1; ++j) {
+            if(arr[j] > arr[j + 1]) {
+                int temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void selectionSort(DynamicArray& arr) {
+    for(int i = 0; i < arr.length() - 1; ++i) {
+        int minIndex = i;
+        for(int j = i + 1; j < arr.length(); ++j) {
+            if(arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        if(minIndex != i) {
+            int temp = arr[i];
+            arr[i] = arr[minIndex];
+            arr[minIndex] = temp;
+        }
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "rus");
+
+    DynamicArray arr;
+    arr.append(5);
+    arr.append(2);
+    arr.append(8);
+    arr.append(3);
+    arr.append(1);
+
+    cout << "Исходный массив:" << endl;
+    for(int i = 0; i < arr.length(); ++i) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    bubbleSort(arr);
+    cout << "После пузырьковой сортировки:" << endl;
+    for(int i = 0; i < arr.length(); ++i) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+
+    DynamicArray arr2;
+    arr2.append(5);
+    arr2.append(2);
+    arr2.append(8);
+    arr2.append(3);
+    arr2.append(1);
+
+    cout << "\nНовый массив для сортировки выбором:" << endl;
+    for(int i = 0; i < arr2.length(); ++i) {
+        cout << arr2[i] << " ";
+    }
+    cout << endl;
+
+    selectionSort(arr2);
+    cout << "После сортировки выбором:" << endl;
+    for(int i = 0; i < arr2.length(); ++i) {
+        cout << arr2[i] << " ";
+    }
+    cout << endl;
+
+    return 0;
+}
