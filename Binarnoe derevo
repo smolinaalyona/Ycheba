@@ -1,0 +1,75 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class BinaryTreeNode {
+public:
+    int value;
+    BinaryTreeNode* left;
+    BinaryTreeNode* right;
+
+    BinaryTreeNode(int val) : value(val), left(NULL), right(NULL) {}
+};
+
+class BinaryTree {
+private:
+    BinaryTreeNode* root;
+
+    void insert_node(BinaryTreeNode* node, int value) {
+        BinaryTreeNode* current = node;
+        while(true) {
+            if(value < current->value) {
+                if(!current->left) {
+                    current->left = new BinaryTreeNode(value);
+                    break;
+                }
+                current = current->left;
+            }
+            else {
+                if(!current->right) {
+                    current->right = new BinaryTreeNode(value);
+                    break;
+                }
+                current = current->right;
+            }
+        }
+    }
+
+    void print_tree(BinaryTreeNode* node) {
+        if(!node) return;
+        cout << node->value << " ";
+        print_tree(node->left);
+        print_tree(node->right);
+    }
+
+public:
+    BinaryTree() : root(NULL) {}
+
+    void create_tree(const vector<int>& values) {
+        if(values.empty()) return;
+        root = new BinaryTreeNode(values[0]);
+        for(int i = 1; i < static_cast<int>(values.size()); ++i) {
+            insert_node(root, values[i]);
+        }
+    }
+
+    void print() {
+        print_tree(root);
+        cout << endl;
+    }
+};
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    
+    int arr[] = {10, 5, 15, 2, 7, 12, 17};
+    vector<int> values(arr, arr + sizeof(arr)/sizeof(arr[0]));
+    
+    BinaryTree tree;
+    tree.create_tree(values);
+    
+    cout << "Îáõîä äåðåâà: ";
+    tree.print();
+
+    return 0;
+}
