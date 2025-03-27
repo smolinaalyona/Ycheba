@@ -1,0 +1,56 @@
+#include <iostream>
+#include <vector>
+#include <stdexcept>
+
+using namespace std;
+
+class Queue {
+private:
+    vector<int> items;
+
+public:
+    Queue() {}
+
+    void enqueue(int item) {
+        items.push_back(item);
+    }
+
+    int dequeue() {
+        if (is_empty()) {
+            throw out_of_range("Очередь пуста");
+        }
+        int item = items[0];
+        items.erase(items.begin());
+        return item;
+    }
+
+    bool is_empty() const {
+        return items.empty();
+    }
+
+    void display() const {
+        for (size_t i = 0; i < items.size(); ++i) {
+            cout << items[i] << " ";
+        }
+        cout << endl;
+    }
+};
+
+int main() {
+    setlocale(LC_ALL, "rus");
+    
+    Queue queue;
+    
+    queue.enqueue(1);
+    queue.enqueue(2);
+    queue.enqueue(3);
+    
+    cout << "Очередь: ";
+    queue.display();
+    
+    cout << "Извлеченный элемент: " << queue.dequeue() << endl;
+    cout << "Извлеченный элемент: " << queue.dequeue() << endl;
+    cout << "Извлеченный элемент: " << queue.dequeue() << endl;
+
+    return 0;
+}
