@@ -1,0 +1,29 @@
+#include <iostream>
+#include <set>
+using namespace std;
+
+int main() {
+    setlocale(LC_ALL, "rus");
+
+    int arr[] = {1, 2, 3, 4, 5};
+    set<int> mySet(arr, arr + sizeof(arr) / sizeof(arr[0]));
+
+    if (mySet.find(1) != mySet.end()) {
+        cout << "1 íàõîäèòñÿ â ìíîæåñòâå" << endl;
+    } else {
+        cout << "1 íå íàõîäèòñÿ â ìíîæåñòâå" << endl;
+    }
+
+    mySet.insert(6);
+    mySet.erase(3);
+
+    int length = mySet.size();
+    cout << "Êîëè÷åñòâî ýëåìåíòîâ: " << length << endl;
+
+    set<int>::iterator it;
+    for (it = mySet.begin(); it != mySet.end(); ++it) {
+        cout << *it << endl;
+    }
+
+    return 0;
+}
