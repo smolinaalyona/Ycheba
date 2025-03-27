@@ -68,7 +68,7 @@ int main() {
     BinaryTree tree;
     tree.create_tree(values);
     
-    cout << "Îáõîä äåðåâà: ";
+    cout << "Обход дерева: ";
     tree.print();
 
     return 0;
