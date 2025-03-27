@@ -9,16 +9,16 @@ int main() {
     set<int> mySet(arr, arr + sizeof(arr) / sizeof(arr[0]));
 
     if (mySet.find(1) != mySet.end()) {
-        cout << "1 íàõîäèòñÿ â ìíîæåñòâå" << endl;
+        cout << "1 находится в множестве" << endl;
     } else {
-        cout << "1 íå íàõîäèòñÿ â ìíîæåñòâå" << endl;
+        cout << "1 не находится в множестве" << endl;
     }
 
     mySet.insert(6);
     mySet.erase(3);
 
     int length = mySet.size();
-    cout << "Êîëè÷åñòâî ýëåìåíòîâ: " << length << endl;
+    cout << "Количество элементов: " << length << endl;
 
     set<int>::iterator it;
     for (it = mySet.begin(); it != mySet.end(); ++it) {
