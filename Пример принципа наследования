@@ -1,0 +1,109 @@
+class Transport {
+    protected String model;
+    protected int year;
+    
+    public Transport(String model, int year) {
+        this.model = model;
+        this.year = year;
+    }
+    
+    public void start() {
+        System.out.println(model + " запущен");
+    }
+    
+    public void stop() {
+        System.out.println(model + " остановлен");
+    }
+    
+    public void displayInfo() {
+        System.out.println("Модель: " + model + ", Год: " + year);
+    }
+}
+
+class Car extends Transport {
+    private int doors;
+    
+    public Car(String model, int year, int doors) {
+        super(model, year);
+        this.doors = doors;
+    }
+    
+    public void honk() {
+        System.out.println(model + " сигналит: Би-бип!");
+    }
+    
+    @Override
+    public void displayInfo() {
+        super.displayInfo();
+        System.out.println("Дверей: " + doors);
+    }
+}
+
+class Airplane extends Transport {
+    private int wingspan;
+    
+    public Airplane(String model, int year, int wingspan) {
+        super(model, year);
+        this.wingspan = wingspan;
+    }
+    
+    public void takeOff() {
+        System.out.println(model + " взлетает");
+    }
+    
+    @Override
+    public void displayInfo() {
+        super.displayInfo();
+        System.out.println("Размах крыльев: " + wingspan + "м");
+    }
+}
+
+class ElectricCar extends Car {
+    private int batteryCapacity;
+    
+    public ElectricCar(String model, int year, int doors, int batteryCapacity) {
+        super(model, year, doors);
+        this.batteryCapacity = batteryCapacity;
+    }
+    
+    @Override
+    public void displayInfo() {
+        super.displayInfo();
+        System.out.println("Ёмкость батареи: " + batteryCapacity + " кВтч");
+    }
+    
+    public void charge() {
+        System.out.println(model + " заряжается");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Transport[] transports = new Transport[4];
+        
+        transports[0] = new Car("Toyota Camry", 2022, 4);
+        transports[1] = new Airplane("Boeing 737", 2020, 35);
+        transports[2] = new ElectricCar("Tesla Model 3", 2023, 4, 75);
+        transports[3] = new Car("Ford Focus", 2021, 5);
+        
+        for (Transport transport : transports) {
+            transport.start();
+            transport.displayInfo();
+            
+            if (transport instanceof Car) {
+                ((Car) transport).honk();
+            }
+            
+            if (transport instanceof Airplane) {
+                ((Airplane) transport).takeOff();
+            }
+            
+            if (transport instanceof ElectricCar) {
+                ((ElectricCar) transport).charge();
+            }
+            
+            transport.stop();
+            System.out.println();
+        }
+    }
+}
