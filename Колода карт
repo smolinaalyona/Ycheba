@@ -1,0 +1,178 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+class Card {
+    private final String suit;
+    private final String rank;
+    
+    public Card(String suit, String rank) {
+        this.suit = suit;
+        this.rank = rank;
+    }
+    
+    @Override
+    public String toString() {
+        return rank + " " + suit;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Card card = (Card) obj;
+        return suit.equals(card.suit) && rank.equals(card.rank);
+    }
+    
+    @Override
+    public int hashCode() {
+        return suit.hashCode() * 31 + rank.hashCode();
+    }
+}
+
+class Deck {
+    private List<Card> cards;
+    private Set<Card> cardsInDeck;
+    
+    private static final String[] SUITS = {"♥", "♦", "♣", "♠"};
+    private static final String[] RANKS = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
+    
+    public Deck() {
+        initializeDeck();
+    }
+    
+    private void initializeDeck() {
+        cards = new ArrayList<>();
+        cardsInDeck = new HashSet<>();
+        
+        for (String suit : SUITS) {
+            for (String rank : RANKS) {
+                Card card = new Card(suit, rank);
+                cards.add(card);
+                cardsInDeck.add(card);
+            }
+        }
+    }
+    
+    public void shuffle() {
+        Collections.shuffle(cards);
+        System.out.println("Колода перетасована");
+    }
+    
+    public Card drawCard() {
+        if (cards.isEmpty()) {
+            System.out.println("Колода пуста");
+            return null;
+        }
+        
+        Card drawnCard = cards.remove(0);
+        cardsInDeck.remove(drawnCard);
+        System.out.println("Сдана карта: " + drawnCard);
+        return drawnCard;
+    }
+    
+    public boolean returnCard(Card card) {
+        if (card == null) {
+            System.out.println("Нельзя вернуть null карту");
+            return false;
+        }
+        
+        if (cardsInDeck.contains(card)) {
+            System.out.println("Карта " + card + " уже есть в колоде");
+            return false;
+        }
+        
+        cards.add(card);
+        cardsInDeck.add(card);
+        System.out.println("Карта " + card + " возвращена в колоду");
+        return true;
+    }
+    
+    public int getRemainingCards() {
+        return cards.size();
+    }
+    
+    public void displayDeck() {
+        System.out.println("Колода (" + cards.size() + " карт):");
+        for (int i = 0; i < cards.size(); i++) {
+            System.out.print(cards.get(i));
+            if (i < cards.size() - 1) {
+                System.out.print(", ");
+            }
+            if ((i + 1) % 4 == 0) {
+                System.out.println();
+            }
+        }
+        System.out.println();
+    }
+}
+
+class Hand {
+    private List<Card> cards;
+    
+    public Hand() {
+        cards = new ArrayList<>();
+    }
+    
+    public void addCard(Card card) {
+        if (card != null) {
+            cards.add(card);
+            System.out.println("Карта " + card + " добавлена в руку");
+        }
+    }
+    
+    public Card removeCard(int index) {
+        if (index >= 0 && index < cards.size()) {
+            Card card = cards.remove(index);
+            System.out.println("Карта " + card + " удалена из руки");
+            return card;
+        }
+        return null;
+    }
+    
+    public void displayHand() {
+        System.out.println("Рука (" + cards.size() + " карт):");
+        for (int i = 0; i < cards.size(); i++) {
+            System.out.println((i + 1) + ". " + cards.get(i));
+        }
+        System.out.println();
+    }
+}
+
+public class CardDeckModel {
+    public static void main(String[] args) {
+        Deck deck = new Deck();
+        Hand hand = new Hand();
+        
+        System.out.println("=== Начальное состояние ===");
+        deck.displayDeck();
+        
+        deck.shuffle();
+        
+        System.out.println("=== Сдача 5 карт в руку ===");
+        for (int i = 0; i < 5; i++) {
+            Card drawnCard = deck.drawCard();
+            hand.addCard(drawnCard);
+        }
+        
+        System.out.println("\n=== Состояние после сдачи ===");
+        deck.displayDeck();
+        hand.displayHand();
+        
+        System.out.println("=== Возврат первой карты из руки в колоду ===");
+        Card cardToReturn = hand.removeCard(0);
+        if (cardToReturn != null) {
+            deck.returnCard(cardToReturn);
+        }
+        
+        System.out.println("\n=== Попытка вернуть ту же карту снова ===");
+        deck.returnCard(cardToReturn);
+        
+        System.out.println("\n=== Итоговое состояние ===");
+        deck.displayDeck();
+        hand.displayHand();
+        System.out.println("Осталось карт в колоде: " + deck.getRemainingCards());
+    }
+}
