@@ -1,0 +1,89 @@
+import java.io.*;
+import java.util.*;
+
+public class FileDeduplicator {
+
+    public static void compress(String inputFile, String outputFile) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+        Set<String> uniqueLines = new LinkedHashSet<>();
+        List<String> allLines = new ArrayList<>();
+        String line;
+        
+        while ((line = reader.readLine()) != null) {
+            allLines.add(line);
+        }
+        reader.close();
+        
+        int duplicateCount = 0;
+        for (String l : allLines) {
+            if (!uniqueLines.add(l)) {
+                duplicateCount++;
+            }
+        }
+        
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+        writer.write("Удалено дублирующихся строк: " + duplicateCount);
+        writer.newLine();
+        writer.write("===УНИКАЛЬНЫЕ СТРОКИ===");
+        writer.newLine();
+        
+        for (String uniqueLine : uniqueLines) {
+            writer.write(uniqueLine);
+            writer.newLine();
+        }
+        writer.close();
+    }
+
+    public static void decompress(String inputFile, String outputFile) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+        List<String> compressedLines = new ArrayList<>();
+        String line;
+        
+        line = reader.readLine();
+        if (line == null || !line.startsWith("Удалено дублирующихся строк: ")) {
+            reader.close();
+            throw new IOException("Неверный формат сжатого файла");
+        }
+        
+        reader.readLine();
+        
+        while ((line = reader.readLine()) != null) {
+            compressedLines.add(line);
+        }
+        reader.close();
+        
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+        for (String compressedLine : compressedLines) {
+            writer.write(compressedLine);
+            writer.newLine();
+        }
+        writer.close();
+    }
+
+    public static void main(String[] args) {
+        if (args.length != 3) {
+            System.out.println("Использование:");
+            System.out.println("  Сжатие: java FileDeduplicator compress исходный.txt сжатый.txt");
+            System.out.println("  Восстановление: java FileDeduplicator decompress сжатый.txt восстановленный.txt");
+            return;
+        }
+        
+        String mode = args[0];
+        String inputFile = args[1];
+        String outputFile = args[2];
+        
+        try {
+            if (mode.equals("compress")) {
+                compress(inputFile, outputFile);
+                System.out.println("Сжатие завершено");
+            } else if (mode.equals("decompress")) {
+                decompress(inputFile, outputFile);
+                System.out.println("Восстановление завершено");
+            } else {
+                System.out.println("Неверный режим. Используйте compress или decompress");
+            }
+        } catch (IOException e) {
+            System.out.println("Ошибка: " + e.getMessage());
+        }
+    }
+}
