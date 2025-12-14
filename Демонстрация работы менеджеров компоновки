@@ -1,0 +1,43 @@
+import javax.swing.*;
+import java.awt.*;
+
+public class LayoutDemo extends JFrame {
+    public LayoutDemo() {
+        setTitle("Демонстрация менеджеров компоновки");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(500, 400);
+        setLocationRelativeTo(null);
+
+        BorderLayout borderLayout = new BorderLayout(5, 5);
+        setLayout(borderLayout);
+
+        JButton northButton = new JButton("Север (BorderLayout)");
+        JButton southButton = new JButton("Юг (BorderLayout)");
+        JButton eastButton = new JButton("Восток (BorderLayout)");
+        JButton westButton = new JButton("Запад (BorderLayout)");
+
+        add(northButton, BorderLayout.NORTH);
+        add(southButton, BorderLayout.SOUTH);
+        add(eastButton, BorderLayout.EAST);
+        add(westButton, BorderLayout.WEST);
+
+        JPanel centerPanel = new JPanel();
+        FlowLayout flowLayout = new FlowLayout(FlowLayout.CENTER, 10, 10);
+        centerPanel.setLayout(flowLayout);
+
+        centerPanel.add(new JButton("Кнопка 1"));
+        centerPanel.add(new JButton("Кнопка 2"));
+        centerPanel.add(new JButton("Кнопка 3"));
+        centerPanel.add(new JButton("Кнопка 4"));
+        centerPanel.add(new JButton("Кнопка 5"));
+
+        add(centerPanel, BorderLayout.CENTER);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            LayoutDemo demo = new LayoutDemo();
+            demo.setVisible(true);
+        });
+    }
+}
