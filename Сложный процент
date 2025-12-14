@@ -1,0 +1,50 @@
+import java.util.Scanner;
+
+public class CompoundInterestCalculator {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("Выберите операцию:");
+        System.out.println("1 - Вычислить сложный процент");
+        System.out.println("2 - Вычислить необходимый процент");
+        
+        int choice = scanner.nextInt();
+        
+        if (choice == 1) {
+            System.out.print("Введите начальную сумму: ");
+            double principal = scanner.nextDouble();
+            
+            System.out.print("Введите процентную ставку (%): ");
+            double rate = scanner.nextDouble();
+            
+            System.out.print("Введите количество периодов: ");
+            int periods = scanner.nextInt();
+            
+            double result = principal * Math.pow(1 + rate / 100, periods);
+            System.out.printf("Результат: %.2f%n", result);
+            
+        } else if (choice == 2) {
+            System.out.print("Введите начальную сумму: ");
+            double principal = scanner.nextDouble();
+            
+            System.out.print("Введите конечную сумму: ");
+            double target = scanner.nextDouble();
+            
+            System.out.print("Введите количество периодов: ");
+            int periods = scanner.nextInt();
+            
+            if (principal <= 0 || target <= 0 || periods <= 0) {
+                System.out.println("Ошибка: все значения должны быть положительными");
+                return;
+            }
+            
+            double requiredRate = (Math.pow(target / principal, 1.0 / periods) - 1) * 100;
+            System.out.printf("Необходимый процент: %.2f%%%n", requiredRate);
+            
+        } else {
+            System.out.println("Неверный выбор");
+        }
+        
+        scanner.close();
+    }
+}
