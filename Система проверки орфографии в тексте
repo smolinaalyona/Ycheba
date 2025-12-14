@@ -1,0 +1,192 @@
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class TextEditor extends JFrame {
+    private JTextArea textArea;
+    private JFileChooser fileChooser;
+    private File currentFile;
+    private Map<String, String> dictionary;
+    private Timer timer;
+    private SwingWorker<Void, Void> worker;
+    private javax.swing.event.DocumentListener documentListener;
+
+    public TextEditor() {
+        setTitle("Текстовый редактор с автозаменой");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
+        setLocationRelativeTo(null);
+
+        textArea = new JTextArea();
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        add(scrollPane, BorderLayout.CENTER);
+
+        createMenuBar();
+        setupAutoCorrect();
+
+        fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Текстовые файлы", "txt"));
+    }
+
+    private void createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu fileMenu = new JMenu("Файл");
+        JMenuItem openItem = new JMenuItem("Открыть");
+        JMenuItem saveItem = new JMenuItem("Сохранить");
+        JMenuItem saveAsItem = new JMenuItem("Сохранить как");
+
+        openItem.addActionListener(e -> openFile());
+        saveItem.addActionListener(e -> saveFile());
+        saveAsItem.addActionListener(e -> saveFileAs());
+
+        fileMenu.add(openItem);
+        fileMenu.add(saveItem);
+        fileMenu.add(saveAsItem);
+        menuBar.add(fileMenu);
+
+        setJMenuBar(menuBar);
+    }
+
+    private void setupAutoCorrect() {
+        dictionary = new HashMap<>();
+        dictionary.put("приветсвую", "приветствую");
+        dictionary.put("здарова", "здравствуй");
+        dictionary.put("пака", "пока");
+        dictionary.put("огромное", "огромное");
+        dictionary.put("спосибо", "спасибо");
+        dictionary.put("превет", "привет");
+        dictionary.put("шына", "шина");
+        dictionary.put("жызнь", "жизнь");
+        dictionary.put("чящя", "чаща");
+        dictionary.put("щюка", "щука");
+
+        timer = new Timer(500, e -> {
+            if (worker != null && !worker.isDone()) {
+                worker.cancel(true);
+            }
+            worker = new AutoCorrectWorker();
+            worker.execute();
+        });
+        timer.setRepeats(false);
+
+        documentListener = new javax.swing.event.DocumentListener() {
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                timer.restart();
+            }
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                timer.restart();
+            }
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+                timer.restart();
+            }
+        };
+        textArea.getDocument().addDocumentListener(documentListener);
+    }
+
+    private void openFile() {
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                StringBuilder content = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    content.append(line).append("\n");
+                }
+                textArea.setText(content.toString());
+                currentFile = file;
+                setTitle(file.getName() + " - Текстовый редактор");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Ошибка чтения файла", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void saveFile() {
+        if (currentFile == null) {
+            saveFileAs();
+        } else {
+            writeToFile(currentFile);
+        }
+    }
+
+    private void saveFileAs() {
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            if (!file.getName().endsWith(".txt")) {
+                file = new File(file.getAbsolutePath() + ".txt");
+            }
+            writeToFile(file);
+            currentFile = file;
+            setTitle(file.getName() + " - Текстовый редактор");
+        }
+    }
+
+    private void writeToFile(File file) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(textArea.getText());
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Ошибка сохранения файла", "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    class AutoCorrectWorker extends SwingWorker<Void, Void> {
+        private String originalText;
+        private String newText;
+
+        protected Void doInBackground() {
+            if (isCancelled()) {
+                return null;
+            }
+            originalText = textArea.getText();
+            newText = autoCorrectText(originalText);
+            return null;
+        }
+
+        protected void done() {
+            try {
+                if (!isCancelled() && newText != null && !newText.equals(originalText)) {
+                    try {
+                        textArea.getDocument().removeDocumentListener(documentListener);
+                        textArea.setText(newText);
+                    } finally {
+                        textArea.getDocument().addDocumentListener(documentListener);
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        private String autoCorrectText(String text) {
+            Pattern pattern = Pattern.compile("\\b[\\p{L}]+\\b");
+            Matcher matcher = pattern.matcher(text);
+            StringBuffer sb = new StringBuffer();
+            while (matcher.find()) {
+                String word = matcher.group();
+                if (dictionary.containsKey(word)) {
+                    matcher.appendReplacement(sb, dictionary.get(word));
+                } else {
+                    matcher.appendReplacement(sb, word);
+                }
+            }
+            matcher.appendTail(sb);
+            return sb.toString();
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            TextEditor editor = new TextEditor();
+            editor.setVisible(true);
+        });
+    }
+}
