@@ -1,0 +1,102 @@
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
+import java.io.*;
+
+public class TextEditor extends JFrame {
+    private JTextArea textArea;
+    private JFileChooser fileChooser;
+    private File currentFile;
+
+    public TextEditor() {
+        setTitle("Текстовый редактор");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(800, 600);
+        setLocationRelativeTo(null);
+
+        textArea = new JTextArea();
+        textArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        add(scrollPane, BorderLayout.CENTER);
+
+        createMenuBar();
+
+        fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Текстовые файлы", "txt"));
+    }
+
+    private void createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+
+        JMenu fileMenu = new JMenu("Файл");
+        JMenuItem openItem = new JMenuItem("Открыть");
+        JMenuItem saveItem = new JMenuItem("Сохранить");
+        JMenuItem saveAsItem = new JMenuItem("Сохранить как");
+
+        openItem.addActionListener(e -> openFile());
+        saveItem.addActionListener(e -> saveFile());
+        saveAsItem.addActionListener(e -> saveFileAs());
+
+        fileMenu.add(openItem);
+        fileMenu.add(saveItem);
+        fileMenu.add(saveAsItem);
+        menuBar.add(fileMenu);
+
+        setJMenuBar(menuBar);
+    }
+
+    private void openFile() {
+        int result = fileChooser.showOpenDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                StringBuilder content = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    content.append(line).append("\n");
+                }
+                textArea.setText(content.toString());
+                currentFile = file;
+                setTitle(file.getName() + " - Текстовый редактор");
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Ошибка чтения файла", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void saveFile() {
+        if (currentFile == null) {
+            saveFileAs();
+        } else {
+            writeToFile(currentFile);
+        }
+    }
+
+    private void saveFileAs() {
+        int result = fileChooser.showSaveDialog(this);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            if (!file.getName().endsWith(".txt")) {
+                file = new File(file.getAbsolutePath() + ".txt");
+            }
+            writeToFile(file);
+            currentFile = file;
+            setTitle(file.getName() + " - Текстовый редактор");
+        }
+    }
+
+    private void writeToFile(File file) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(textArea.getText());
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Ошибка сохранения файла", "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            TextEditor editor = new TextEditor();
+            editor.setVisible(true);
+        });
+    }
+}
