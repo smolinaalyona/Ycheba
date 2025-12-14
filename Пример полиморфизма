@@ -1,0 +1,94 @@
+interface Payment {
+    void processPayment(double amount);
+}
+
+class CreditCard implements Payment {
+    private String cardNumber;
+    
+    public CreditCard(String cardNumber) {
+        this.cardNumber = cardNumber;
+    }
+    
+    public void processPayment(double amount) {
+        System.out.println("Оплата картой " + cardNumber.substring(cardNumber.length() - 4) + " на сумму " + amount);
+        System.out.println("Проверка CVV кода...");
+        System.out.println("Списание средств...");
+    }
+}
+
+class PayPal implements Payment {
+    private String email;
+    
+    public PayPal(String email) {
+        this.email = email;
+    }
+    
+    public void processPayment(double amount) {
+        System.out.println("PayPal оплата с email " + email + " на сумму " + amount);
+        System.out.println("Редирект на сайт PayPal...");
+        System.out.println("Подтверждение платежа...");
+    }
+}
+
+class CryptoPayment implements Payment {
+    private String walletAddress;
+    
+    public CryptoPayment(String walletAddress) {
+        this.walletAddress = walletAddress;
+    }
+    
+    public void processPayment(double amount) {
+        System.out.println("Крипто оплата с кошелька " + walletAddress.substring(0, 8) + "... на сумму " + amount);
+        System.out.println("Подтверждение транзакции в блокчейне...");
+        System.out.println("Ожидание 3 подтверждений сети...");
+    }
+}
+
+class ShoppingCart {
+    private List<Payment> payments = new ArrayList<>();
+    
+    public void addPaymentMethod(Payment payment) {
+        payments.add(payment);
+    }
+    
+    public void checkout(double amount, int paymentIndex) {
+        if (paymentIndex >= 0 && paymentIndex < payments.size()) {
+            payments.get(paymentIndex).processPayment(amount);
+        }
+    }
+    
+    public void processAllPayments(double amount) {
+        for (Payment payment : payments) {
+            payment.processPayment(amount);
+            System.out.println("---");
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ShoppingCart cart = new ShoppingCart();
+        
+        cart.addPaymentMethod(new CreditCard("1234567812345678"));
+        cart.addPaymentMethod(new PayPal("user@example.com"));
+        cart.addPaymentMethod(new CryptoPayment("0xABcDeF1234567890"));
+        
+        System.out.println("Оплата разными способами:");
+        cart.checkout(1500.0, 0);
+        
+        System.out.println("\nВсе способы оплаты:");
+        cart.processAllPayments(500.0);
+        
+        Payment[] payments = {
+            new CreditCard("8765432187654321"),
+            new PayPal("admin@example.com"),
+            new CryptoPayment("0x9876543210ABCDEF")
+        };
+        
+        System.out.println("\nОбработка через массив:");
+        for (Payment payment : payments) {
+            payment.processPayment(100.0);
+            System.out.println();
+        }
+    }
+}
