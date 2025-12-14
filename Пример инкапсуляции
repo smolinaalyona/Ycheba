@@ -1,0 +1,61 @@
+public class BankAccount {
+    private String accountNumber;
+    private double balance;
+    private String ownerName;
+    
+    public BankAccount(String accountNumber, String ownerName) {
+        this.accountNumber = accountNumber;
+        this.ownerName = ownerName;
+        this.balance = 0.0;
+    }
+    
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+    
+    public double getBalance() {
+        return balance;
+    }
+    
+    public String getOwnerName() {
+        return ownerName;
+    }
+    
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+            System.out.println("Депозит успешен. Новый баланс: " + balance);
+        } else {
+            System.out.println("Сумма депозита должна быть положительной");
+        }
+    }
+    
+    public void withdraw(double amount) {
+        if (amount > 0 && amount <= balance) {
+            balance -= amount;
+            System.out.println("Снятие успешно. Новый баланс: " + balance);
+        } else {
+            System.out.println("Недостаточно средств или неверная сумма");
+        }
+    }
+    
+    public void setOwnerName(String ownerName) {
+        if (ownerName != null && !ownerName.trim().isEmpty()) {
+            this.ownerName = ownerName;
+        } else {
+            System.out.println("Имя владельца не может быть пустым");
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        BankAccount account = new BankAccount("123456789", "Иван Иванов");
+        
+        account.deposit(1000);
+        account.withdraw(300);
+        
+        System.out.println("Баланс: " + account.getBalance());
+        System.out.println("Владелец: " + account.getOwnerName());
+    }
+}
