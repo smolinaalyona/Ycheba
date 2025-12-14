@@ -1,0 +1,162 @@
+class Engine {
+    private String type;
+    
+    public Engine(String type) {
+        this.type = type;
+    }
+    
+    public void start() {
+        System.out.println("Двигатель " + type + " запущен");
+    }
+}
+
+class Wheel {
+    private int size;
+    
+    public Wheel(int size) {
+        this.size = size;
+    }
+    
+    public void rotate() {
+        System.out.println("Колесо " + size + " дюймов вращается");
+    }
+}
+
+class Car {
+    private Engine engine;
+    private List<Wheel> wheels;
+    
+    public Car(Engine engine) {
+        this.engine = engine;
+        this.wheels = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            wheels.add(new Wheel(17));
+        }
+    }
+    
+    public void drive() {
+        engine.start();
+        for (Wheel wheel : wheels) {
+            wheel.rotate();
+        }
+        System.out.println("Машина едет");
+    }
+    
+    public void replaceEngine(Engine newEngine) {
+        this.engine = newEngine;
+    }
+}
+
+class Department {
+    private String name;
+    
+    public Department(String name) {
+        this.name = name;
+    }
+    
+    public String getName() {
+        return name;
+    }
+}
+
+class Employee {
+    private String name;
+    
+    public Employee(String name) {
+        this.name = name;
+    }
+    
+    public String getName() {
+        return name;
+    }
+}
+
+class University {
+    private List<Department> departments;
+    
+    public University() {
+        this.departments = new ArrayList<>();
+    }
+    
+    public void addDepartment(Department department) {
+        departments.add(department);
+    }
+    
+    public void removeDepartment(Department department) {
+        departments.remove(department);
+    }
+}
+
+class Company {
+    private List<Employee> employees;
+    
+    public Company() {
+        this.employees = new ArrayList<>();
+    }
+    
+    public void hireEmployee(Employee employee) {
+        employees.add(employee);
+    }
+    
+    public void fireEmployee(Employee employee) {
+        employees.remove(employee);
+    }
+}
+
+class House {
+    private Room livingRoom;
+    
+    public House() {
+        this.livingRoom = new Room();
+    }
+    
+    private class Room {
+        private int size;
+        
+        public Room() {
+            this.size = 20;
+        }
+    }
+    
+    public void build() {
+        System.out.println("Дом построен с комнатой размером " + livingRoom.size + " м²");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        System.out.println("=== АГРЕГАЦИЯ ===");
+        Department itDepartment = new Department("IT");
+        University university = new University();
+        university.addDepartment(itDepartment);
+        
+        Employee employee = new Employee("Иван");
+        Company company = new Company();
+        company.hireEmployee(employee);
+        
+        System.out.println("Отдел существует без университета: " + itDepartment.getName());
+        System.out.println("Сотрудник существует без компании: " + employee.getName());
+        
+        university.removeDepartment(itDepartment);
+        company.fireEmployee(employee);
+        
+        System.out.println("\n=== КОМПОЗИЦИЯ ===");
+        Engine engine = new Engine("V8");
+        Car car = new Car(engine);
+        car.drive();
+        
+        House house = new House();
+        house.build();
+        
+        System.out.println("\n=== ДОПОЛНИТЕЛЬНЫЙ ПРИМЕР ===");
+        Engine oldEngine = new Engine("Старый двигатель");
+        Engine newEngine = new Engine("Новый двигатель");
+        
+        Car myCar = new Car(oldEngine);
+        myCar.drive();
+        
+        myCar.replaceEngine(newEngine);
+        System.out.println("Двигатель заменен");
+        myCar.drive();
+    }
+}
